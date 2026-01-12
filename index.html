@@ -86,23 +86,22 @@ export default function App() {
       const startDateApi = `${dateKeys[0]}T00:00:00`;
 
       // 2. Запросы к API (через corsproxy.io для обхода CORS в браузере, если нужно)
-      // В продакшене лучше использовать свой прокси, но для демо попробуем напрямую или через публичный
       const headers = { 'Authorization': apiKey };
       
-      // ВНИМАНИЕ: Прямые запросы могут блокироваться браузером. 
-      // Используем публичный CORS прокси для демонстрации.
+      // ВНИМАНИЕ: Используем публичный CORS прокси.
+      // encodeURIComponent убран, так как некоторые прокси лучше работают с прямой строкой
       const PROXY = 'https://corsproxy.io/?'; 
-      const STOCKS_URL = `${PROXY}${encodeURIComponent(`https://statistics-api.wildberries.ru/api/v1/supplier/stocks?dateFrom=2024-01-01`)}`;
-      const ORDERS_URL = `${PROXY}${encodeURIComponent(`https://statistics-api.wildberries.ru/api/v1/supplier/orders?dateFrom=${startDateApi}&flag=0`)}`;
+      const STOCKS_URL = `${PROXY}https://statistics-api.wildberries.ru/api/v1/supplier/stocks?dateFrom=2024-01-01`;
+      const ORDERS_URL = `${PROXY}https://statistics-api.wildberries.ru/api/v1/supplier/orders?dateFrom=${startDateApi}&flag=0`;
 
       // А) Остатки
       const stocksRes = await fetch(STOCKS_URL, { headers });
-      if (!stocksRes.ok) throw new Error('Ошибка загрузки остатков (Проверьте ключ)');
+      if (!stocksRes.ok) throw new Error('Ошибка загрузки остатков. Проверьте ключ или попробуйте позже.');
       const stocksJson = await stocksRes.json();
 
       // Б) Заказы
       const ordersRes = await fetch(ORDERS_URL, { headers });
-      if (!ordersRes.ok) throw new Error('Ошибка загрузки заказов');
+      if (!ordersRes.ok) throw new Error('Ошибка загрузки заказов.');
       const ordersJson = await ordersRes.json();
 
       // 3. Обработка данных
@@ -207,7 +206,7 @@ export default function App() {
 
     } catch (err) {
       console.error(err);
-      setError(err.message + '. Попробуйте включить VPN или использовать прокси, так как это браузер.');
+      setError(err.message + '. Если вы в РФ, попробуйте VPN или backend-прокси.');
     } finally {
       setLoading(false);
     }
@@ -392,7 +391,7 @@ export default function App() {
       
       {/* Footer hint */}
       <div className="fixed bottom-0 w-full bg-white border-t p-2 text-center text-[10px] text-gray-400 z-20">
-        Сортировка: Артикул &rarr; Размер. Данные за 7 дней.
+        Сортировка: Артикул → Размер. Данные за 7 дней.
       </div>
 
     </div>

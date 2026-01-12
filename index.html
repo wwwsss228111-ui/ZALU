@@ -89,14 +89,14 @@ export default function App() {
       const headers = { 'Authorization': apiKey };
       
       // ВНИМАНИЕ: Используем публичный CORS прокси.
-      // encodeURIComponent убран, так как некоторые прокси лучше работают с прямой строкой
+      // encodeURIComponent обязателен, чтобы параметры WB API не терялись при передаче через прокси
       const PROXY = 'https://corsproxy.io/?'; 
-      const STOCKS_URL = `${PROXY}https://statistics-api.wildberries.ru/api/v1/supplier/stocks?dateFrom=2024-01-01`;
-      const ORDERS_URL = `${PROXY}https://statistics-api.wildberries.ru/api/v1/supplier/orders?dateFrom=${startDateApi}&flag=0`;
+      const STOCKS_URL = `${PROXY}${encodeURIComponent(`https://statistics-api.wildberries.ru/api/v1/supplier/stocks?dateFrom=2024-01-01`)}`;
+      const ORDERS_URL = `${PROXY}${encodeURIComponent(`https://statistics-api.wildberries.ru/api/v1/supplier/orders?dateFrom=${startDateApi}&flag=0`)}`;
 
       // А) Остатки
       const stocksRes = await fetch(STOCKS_URL, { headers });
-      if (!stocksRes.ok) throw new Error('Ошибка загрузки остатков. Проверьте ключ или попробуйте позже.');
+      if (!stocksRes.ok) throw new Error('Ошибка загрузки остатков. Проверьте ключ.');
       const stocksJson = await stocksRes.json();
 
       // Б) Заказы
@@ -206,7 +206,7 @@ export default function App() {
 
     } catch (err) {
       console.error(err);
-      setError(err.message + '. Если вы в РФ, попробуйте VPN или backend-прокси.');
+      setError(err.message + '. Попробуйте включить VPN.');
     } finally {
       setLoading(false);
     }
@@ -391,7 +391,7 @@ export default function App() {
       
       {/* Footer hint */}
       <div className="fixed bottom-0 w-full bg-white border-t p-2 text-center text-[10px] text-gray-400 z-20">
-        Сортировка: Артикул → Размер. Данные за 7 дней.
+        Сортировка: Артикул &rarr; Размер. Данные за 7 дней.
       </div>
 
     </div>
